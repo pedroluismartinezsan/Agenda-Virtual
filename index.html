@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta name="theme-color" content="#0b1f3a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Agenda Quindío">
+
+  <title>Agenda del Diputado del Quindío</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">Q</div>
+
+      <div>
+        <h1>AGENDA</h1>
+        <p>DIPUTADO DEL QUINDÍO</p>
+      </div>
+    </div>
+
+    <button id="installBtn" class="install-btn hidden">
+      Instalar
+    </button>
+  </header>
+
+  <main>
+
+    <!-- RESUMEN -->
+    <section class="summary">
+
+      <div class="summary-card">
+        <span>HOY</span>
+        <strong id="todayCount">0</strong>
+        <small>compromisos</small>
+      </div>
+
+      <div class="summary-card">
+        <span>PRÓXIMOS</span>
+        <strong id="upcomingCount">0</strong>
+        <small>actividades</small>
+      </div>
+
+      <div class="summary-card priority">
+        <span>ALTA</span>
+        <strong id="highCount">0</strong>
+        <small>prioridad</small>
+      </div>
+
+    </section>
+
+    <!-- CALENDARIO -->
+    <section class="calendar-container">
+
+      <div class="calendar-header">
+
+        <button id="prevMonth" class="nav-btn">‹</button>
+
+        <div>
+          <h2 id="monthTitle"></h2>
+          <button id="todayBtn" class="today-btn">
+            Hoy
+          </button>
+        </div>
+
+        <button id="nextMonth" class="nav-btn">›</button>
+
+      </div>
+
+      <div class="weekdays">
+        <span>L</span>
+        <span>M</span>
+        <span>M</span>
+        <span>J</span>
+        <span>V</span>
+        <span>S</span>
+        <span>D</span>
+      </div>
+
+      <div id="calendar" class="calendar"></div>
+
+    </section>
+
+    <!-- AGENDA -->
+    <section class="agenda-section">
+
+      <div class="section-title">
+        <div>
+          <span class="section-label">AGENDA</span>
+          <h2 id="selectedDateTitle">Compromisos</h2>
+        </div>
+
+        <button id="addBtn" class="add-btn">
+          + Agregar
+        </button>
+      </div>
+
+      <div id="eventList" class="event-list"></div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <div>
+          <span class="section-label">NUEVO COMPROMISO</span>
+          <h2 id="modalTitle">Agregar actividad</h2>
+        </div>
+
+        <button id="closeModal" class="close-btn">
+          ×
+        </button>
+      </div>
+
+      <form id="eventForm">
+
+        <input type="hidden" id="eventId">
+
+        <label>
+          Compromiso
+          <input
+            type="text"
+            id="eventTitle"
+            placeholder="Ej. Reunión con líderes comunitarios"
+            required
+          >
+        </label>
+
+        <div class="form-grid">
+
+          <label>
+            Fecha
+            <input type="date" id="eventDate" required>
+          </label>
+
+          <label>
+            Hora
+            <input type="time" id="eventTime" required>
+          </label>
+
+        </div>
+
+        <label>
+          Lugar
+          <input
+            type="text"
+            id="eventLocation"
+            placeholder="Ej. Asamblea Departamental"
+          >
+        </label>
+
+        <div class="form-grid">
+
+          <label>
+            Categoría
+            <select id="eventCategory">
+
+              <option value="Sesión Plenaria">
+                Sesión Plenaria
+              </option>
+
+              <option value="Comisión">
+                Comisión
+              </option>
+
+              <option value="Reunión Ciudadana">
+                Reunión Ciudadana
+              </option>
+
+              <option value="Reunión Institucional">
+                Reunión Institucional
+              </option>
+
+              <option value="Prensa">
+                Prensa
+              </option>
+
+              <option value="Recorrido / Visita">
+                Recorrido / Visita
+              </option>
+
+              <option value="Otro">
+                Otro
+              </option>
+
+            </select>
+          </label>
+
+          <label>
+            Prioridad
+            <select id="eventPriority">
+
+              <option value="Alta">
+                Alta
+              </option>
+
+              <option value="Media" selected>
+                Media
+              </option>
+
+              <option value="Baja">
+                Baja
+              </option>
+
+            </select>
+          </label>
+
+        </div>
+
+        <label>
+          Observaciones
+
+          <textarea
+            id="eventNotes"
+            rows="4"
+            placeholder="Información adicional..."
+          ></textarea>
+
+        </label>
+
+        <div class="form-actions">
+
+          <button
+            type="button"
+            id="deleteBtn"
+            class="delete-btn hidden"
+          >
+            Eliminar
+          </button>
+
+          <button
+            type="button"
+            id="cancelBtn"
+            class="cancel-btn"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            class="save-btn"
+          >
+            Guardar
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js")
+          .then(() => console.log("PWA lista"))
+          .catch(error => console.error("Error PWA:", error));
+      });
+    }
+  </script>
+
+</body>
+</html>
