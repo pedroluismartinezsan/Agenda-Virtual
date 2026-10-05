@@ -1,32 +1,72 @@
 /* ==========================================================
-   AGENDA VIRTUAL - PEDRO LEÓN
+   AGENDA VIRTUAL · PEDRO LEÓN
+   Agenda + LocalStorage + Notificaciones
+========================================================== */
+
+
+/* ==========================================================
+   CONFIGURACIÓN
+========================================================== */
+
+const STORAGE_KEY = "agendaEvents";
+const NOTIFIED_KEY = "agendaNotified";
+
+const REMINDER_MINUTES = 30;
+
+
+/* ==========================================================
+   VARIABLES
 ========================================================== */
 
 let events = JSON.parse(
-    localStorage.getItem("agendaEvents")
+    localStorage.getItem(STORAGE_KEY)
 ) || [];
 
+let notifiedEvents = JSON.parse(
+    localStorage.getItem(NOTIFIED_KEY)
+) || {};
+
 let currentDate = new Date();
-let selectedDate = formatDate(new Date());
+
+let selectedDate =
+    formatDate(new Date());
+
 
 /* ==========================================================
    ELEMENTOS
 ========================================================== */
 
-const calendar = document.getElementById("calendar");
-const monthTitle = document.getElementById("monthTitle");
+const calendar =
+    document.getElementById("calendar");
 
-const prevMonth = document.getElementById("prevMonth");
-const nextMonth = document.getElementById("nextMonth");
+const monthTitle =
+    document.getElementById("monthTitle");
 
-const eventList = document.getElementById("eventList");
+const prevMonth =
+    document.getElementById("prevMonth");
+
+const nextMonth =
+    document.getElementById("nextMonth");
+
+const eventList =
+    document.getElementById("eventList");
+
 const selectedDateTitle =
-    document.getElementById("selectedDateTitle");
+    document.getElementById(
+        "selectedDateTitle"
+    );
 
-const modal = document.getElementById("modal");
-const addBtn = document.getElementById("addBtn");
-const closeModal = document.getElementById("closeModal");
-const cancelBtn = document.getElementById("cancelBtn");
+const modal =
+    document.getElementById("modal");
+
+const addBtn =
+    document.getElementById("addBtn");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+const cancelBtn =
+    document.getElementById("cancelBtn");
 
 const eventForm =
     document.getElementById("eventForm");
@@ -37,6 +77,12 @@ const deleteBtn =
 const todayBtn =
     document.getElementById("todayBtn");
 
+const notificationBtn =
+    document.getElementById(
+        "notificationBtn"
+    );
+
+
 /* ==========================================================
    INICIO
 ========================================================== */
@@ -45,12 +91,30 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        updateHeroDate();
+
         renderCalendar();
+
         renderEvents();
+
         updateCounters();
+
+        requestNotificationPermission();
+
+        checkReminders();
+
+        /*
+         * Revisar recordatorios cada minuto.
+         */
+
+        setInterval(
+            checkReminders,
+            60 * 1000
+        );
 
     }
 );
+
 
 /* ==========================================================
    FECHAS
@@ -58,22 +122,59 @@ document.addEventListener(
 
 function formatDate(date) {
 
-    const year = date.getFullYear();
+    const year =
+        date.getFullYear();
 
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
 
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
 
+
 function todayString() {
-    return formatDate(new Date());
+
+    return formatDate(
+        new Date()
+    );
+
 }
+
+
+/* ==========================================================
+   FECHA DEL ENCABEZADO
+========================================================== */
+
+function updateHeroDate() {
+
+    const heroDate =
+        document.getElementById(
+            "heroDate"
+        );
+
+    if (!heroDate) return;
+
+    heroDate.textContent =
+        new Intl.DateTimeFormat(
+            "es-CO",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long"
+            }
+        ).format(
+            new Date()
+        );
+
+}
+
 
 /* ==========================================================
    CALENDARIO
@@ -90,16 +191,30 @@ function renderCalendar() {
         currentDate.getMonth();
 
     const firstDay =
-        new Date(year, month, 1);
+        new Date(
+            year,
+            month,
+            1
+        );
 
     const lastDay =
-        new Date(year, month + 1, 0);
+        new Date(
+            year,
+            month + 1,
+            0
+        );
+
+    /*
+     * Convertimos domingo=0
+     * a lunes=0
+     */
 
     const startDay =
         (firstDay.getDay() + 6) % 7;
 
     const totalDays =
         lastDay.getDate();
+
 
     monthTitle.textContent =
         new Intl.DateTimeFormat(
@@ -108,77 +223,149 @@ function renderCalendar() {
                 month: "long",
                 year: "numeric"
             }
-        ).format(currentDate);
+        ).format(
+            currentDate
+        );
 
-    // Vacíos
 
-    for (let i = 0; i < startDay; i++) {
+    /*
+     * Espacios antes del día 1
+     */
+
+    for (
+        let i = 0;
+        i < startDay;
+        i++
+    ) {
 
         const empty =
             document.createElement("div");
 
-        calendar.appendChild(empty);
+        calendar.appendChild(
+            empty
+        );
+
     }
 
-    // Días
 
-    for (let day = 1; day <= totalDays; day++) {
+    /*
+     * Días
+     */
+
+    for (
+        let day = 1;
+        day <= totalDays;
+        day++
+    ) {
 
         const date =
-            new Date(year, month, day);
+            new Date(
+                year,
+                month,
+                day
+            );
 
         const dateStr =
             formatDate(date);
 
         const cell =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         cell.className = "day";
 
         cell.textContent = day;
 
-        if (dateStr === todayString()) {
-            cell.classList.add("today");
+
+        /*
+         * Hoy
+         */
+
+        if (
+            dateStr ===
+            todayString()
+        ) {
+
+            cell.classList.add(
+                "today"
+            );
+
         }
 
-        if (dateStr === selectedDate) {
-            cell.classList.add("selected");
+
+        /*
+         * Día seleccionado
+         */
+
+        if (
+            dateStr ===
+            selectedDate
+        ) {
+
+            cell.classList.add(
+                "selected"
+            );
+
         }
+
+
+        /*
+         * Hay eventos
+         */
 
         if (
             events.some(
-                e => e.date === dateStr
+                event =>
+                    event.date ===
+                    dateStr
             )
         ) {
+
             cell.classList.add(
                 "has-events"
             );
+
         }
+
 
         cell.addEventListener(
             "click",
             () => {
 
-                selectedDate = dateStr;
+                selectedDate =
+                    dateStr;
 
                 renderCalendar();
+
                 renderEvents();
 
             }
         );
 
-        calendar.appendChild(cell);
+
+        calendar.appendChild(
+            cell
+        );
+
     }
 
 }
 
+
 /* ==========================================================
-   EVENTOS
+   EVENTOS DEL DÍA
 ========================================================== */
 
 function renderEvents() {
 
-    const dateFormatted =
+    const date =
+        new Date(
+            `${selectedDate}T12:00:00`
+        );
+
+
+    selectedDateTitle.textContent =
         new Intl.DateTimeFormat(
             "es-CO",
             {
@@ -187,80 +374,152 @@ function renderEvents() {
                 month: "long"
             }
         ).format(
-            new Date(selectedDate)
+            date
         );
 
-    selectedDateTitle.textContent =
-        dateFormatted;
 
     const dayEvents =
         events
             .filter(
-                e => e.date === selectedDate
+                event =>
+                    event.date ===
+                    selectedDate
             )
-            .sort((a, b) =>
-                a.time.localeCompare(b.time)
+            .sort(
+                (a, b) =>
+                    a.time.localeCompare(
+                        b.time
+                    )
             );
+
 
     eventList.innerHTML = "";
 
-    if (dayEvents.length === 0) {
+
+    if (
+        dayEvents.length === 0
+    ) {
 
         eventList.innerHTML = `
             <div class="empty">
                 No hay compromisos
+                programados para este día.
             </div>
         `;
 
         return;
+
     }
 
-    dayEvents.forEach(event => {
 
-        const card =
-            document.createElement("div");
+    dayEvents.forEach(
+        event => {
 
-        card.className =
-            `event-card priority-${event.priority.toLowerCase()}`;
+            const card =
+                document.createElement(
+                    "div"
+                );
 
-        card.innerHTML = `
-            <div class="event-top">
 
-                <div>
+            const priority =
+                (
+                    event.priority ||
+                    "Media"
+                ).toLowerCase();
 
-                    <h3 class="event-title">
-                        ${event.title}
-                    </h3>
 
-                    <div class="event-meta">
-                        🕒 ${event.time}
-                        <br>
-                        📍 ${event.location || "Sin lugar"}
+            card.className =
+                `event-card priority-${priority}`;
+
+
+            const reminderHTML =
+                event.reminder !== false
+                    ? `
+                        <span
+                          class="event-reminder"
+                          title="Recordatorio 30 minutos antes"
+                        >
+                          🔔 30 min
+                        </span>
+                      `
+                    : "";
+
+
+            card.innerHTML = `
+
+                <div class="event-top">
+
+                    <div>
+
+                        <h3 class="event-title">
+                            ${escapeHTML(
+                                event.title
+                            )}
+                        </h3>
+
+                        <div class="event-meta">
+
+                            🕒
+                            ${escapeHTML(
+                                event.time
+                            )}
+
+                            <br>
+
+                            📍
+                            ${escapeHTML(
+                                event.location ||
+                                "Sin lugar"
+                            )}
+
+                        </div>
+
+                        <div class="event-category">
+
+                            ${escapeHTML(
+                                event.category
+                            )}
+
+                        </div>
+
+                        ${reminderHTML}
+
                     </div>
 
-                    <div class="event-category">
-                        ${event.category}
+                    <div class="event-priority">
+
+                        ${escapeHTML(
+                            event.priority
+                        )}
+
                     </div>
 
                 </div>
 
-                <div class="event-time">
-                    ${event.priority}
-                </div>
+            `;
 
-            </div>
-        `;
 
-        card.addEventListener(
-            "click",
-            () => editEvent(event.id)
-        );
+            card.addEventListener(
+                "click",
+                () => {
 
-        eventList.appendChild(card);
+                    editEvent(
+                        event.id
+                    );
 
-    });
+                }
+            );
+
+
+            eventList.appendChild(
+                card
+            );
+
+        }
+    );
 
 }
+
 
 /* ==========================================================
    CONTADORES
@@ -268,38 +527,67 @@ function renderEvents() {
 
 function updateCounters() {
 
-    const today = todayString();
+    const today =
+        todayString();
+
 
     const todayEvents =
         events.filter(
-            e => e.date === today
+            event =>
+                event.date ===
+                today
         );
+
 
     const high =
         events.filter(
-            e => e.priority === "Alta"
+            event =>
+                event.priority ===
+                "Alta"
         );
+
+
+    const upcoming =
+        events.filter(
+            event => {
+
+                const date =
+                    new Date(
+                        `${event.date}T${event.time}`
+                    );
+
+                return date >=
+                    new Date();
+
+            }
+        );
+
 
     document.getElementById(
         "todayCount"
     ).textContent =
         todayEvents.length;
 
+
     document.getElementById(
         "todayHeroCount"
     ).textContent =
         todayEvents.length;
 
+
     document.getElementById(
         "upcomingCount"
     ).textContent =
-        events.length;
+        upcoming.length;
+
 
     document.getElementById(
         "highCount"
     ).textContent =
         high.length;
+
 }
+
 
 /* ==========================================================
    MODAL
@@ -307,26 +595,47 @@ function updateCounters() {
 
 function openModal() {
 
-    modal.classList.remove("hidden");
+    modal.classList.remove(
+        "hidden"
+    );
+
 }
+
 
 function closeModalFunc() {
 
-    modal.classList.add("hidden");
+    modal.classList.add(
+        "hidden"
+    );
 
     eventForm.reset();
+
 
     document.getElementById(
         "eventId"
     ).value = "";
 
+
+    document.getElementById(
+        "eventReminder"
+    ).checked = true;
+
+
     deleteBtn.classList.add(
         "hidden"
     );
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Nuevo compromiso";
+
 }
 
+
 /* ==========================================================
-   BOTONES
+   NUEVO EVENTO
 ========================================================== */
 
 addBtn.addEventListener(
@@ -335,38 +644,60 @@ addBtn.addEventListener(
 
         eventForm.reset();
 
+
+        document.getElementById(
+            "eventId"
+        ).value = "";
+
+
         document.getElementById(
             "eventDate"
-        ).value = selectedDate;
+        ).value =
+            selectedDate;
+
+
+        document.getElementById(
+            "eventReminder"
+        ).checked =
+            true;
+
+
+        document.getElementById(
+            "modalTitle"
+        ).textContent =
+            "Nuevo compromiso";
+
+
+        deleteBtn.classList.add(
+            "hidden"
+        );
+
 
         openModal();
 
     }
 );
 
+
+/* ==========================================================
+   CERRAR MODAL
+========================================================== */
+
 closeModal.addEventListener(
     "click",
     closeModalFunc
 );
+
 
 cancelBtn.addEventListener(
     "click",
     closeModalFunc
 );
 
-todayBtn.addEventListener(
-    "click",
-    () => {
 
-        currentDate = new Date();
-
-        selectedDate = todayString();
-
-        renderCalendar();
-        renderEvents();
-
-    }
-);
+/* ==========================================================
+   CAMBIAR MES
+========================================================== */
 
 prevMonth.addEventListener(
     "click",
@@ -377,8 +708,10 @@ prevMonth.addEventListener(
         );
 
         renderCalendar();
+
     }
 );
+
 
 nextMonth.addEventListener(
     "click",
@@ -389,32 +722,68 @@ nextMonth.addEventListener(
         );
 
         renderCalendar();
+
     }
 );
 
+
 /* ==========================================================
-   GUARDAR
+   BOTÓN HOY
+========================================================== */
+
+todayBtn.addEventListener(
+    "click",
+    () => {
+
+        currentDate =
+            new Date();
+
+        selectedDate =
+            todayString();
+
+        renderCalendar();
+
+        renderEvents();
+
+    }
+);
+
+
+/* ==========================================================
+   GUARDAR EVENTO
 ========================================================== */
 
 eventForm.addEventListener(
     "submit",
-    e => {
+    event => {
 
-        e.preventDefault();
+        event.preventDefault();
+
 
         const id =
             document.getElementById(
                 "eventId"
             ).value;
 
+
+        const reminder =
+            document.getElementById(
+                "eventReminder"
+            ).checked;
+
+
         const data = {
 
-            id: id || Date.now(),
+            id:
+                id ||
+                String(
+                    Date.now()
+                ),
 
             title:
                 document.getElementById(
                     "eventTitle"
-                ).value,
+                ).value.trim(),
 
             date:
                 document.getElementById(
@@ -429,7 +798,7 @@ eventForm.addEventListener(
             location:
                 document.getElementById(
                     "eventLocation"
-                ).value,
+                ).value.trim(),
 
             category:
                 document.getElementById(
@@ -441,26 +810,67 @@ eventForm.addEventListener(
                     "eventPriority"
                 ).value,
 
+            reminder: reminder,
+
+            reminderMinutes:
+                REMINDER_MINUTES,
+
             notes:
                 document.getElementById(
                     "eventNotes"
-                ).value
+                ).value.trim()
 
         };
+
 
         if (id) {
 
             const index =
                 events.findIndex(
-                    e => e.id == id
+                    item =>
+                        String(item.id) ===
+                        String(id)
                 );
 
-            events[index] = data;
+
+            if (index !== -1) {
+
+                /*
+                 * Si cambia la fecha/hora,
+                 * permitimos un nuevo aviso.
+                 */
+
+                const oldEvent =
+                    events[index];
+
+
+                if (
+                    oldEvent.date !==
+                    data.date ||
+                    oldEvent.time !==
+                    data.time
+                ) {
+
+                    delete notifiedEvents[
+                        notificationKey(data)
+                    ];
+
+                    saveNotificationState();
+
+                }
+
+
+                events[index] =
+                    data;
+
+            }
 
         } else {
 
             events.push(data);
+
         }
+
 
         saveEvents();
 
@@ -469,57 +879,93 @@ eventForm.addEventListener(
     }
 );
 
+
 /* ==========================================================
-   EDITAR
+   EDITAR EVENTO
 ========================================================== */
 
 function editEvent(id) {
 
     const event =
         events.find(
-            e => e.id == id
+            item =>
+                String(item.id) ===
+                String(id)
         );
+
 
     if (!event) return;
 
+
     document.getElementById(
         "eventId"
-    ).value = event.id;
+    ).value =
+        event.id;
+
 
     document.getElementById(
         "eventTitle"
-    ).value = event.title;
+    ).value =
+        event.title;
+
 
     document.getElementById(
         "eventDate"
-    ).value = event.date;
+    ).value =
+        event.date;
+
 
     document.getElementById(
         "eventTime"
-    ).value = event.time;
+    ).value =
+        event.time;
+
 
     document.getElementById(
         "eventLocation"
-    ).value = event.location;
+    ).value =
+        event.location || "";
+
 
     document.getElementById(
         "eventCategory"
-    ).value = event.category;
+    ).value =
+        event.category;
+
 
     document.getElementById(
         "eventPriority"
-    ).value = event.priority;
+    ).value =
+        event.priority;
+
+
+    document.getElementById(
+        "eventReminder"
+    ).checked =
+        event.reminder !== false;
+
 
     document.getElementById(
         "eventNotes"
-    ).value = event.notes;
+    ).value =
+        event.notes || "";
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Editar compromiso";
+
 
     deleteBtn.classList.remove(
         "hidden"
     );
 
+
     openModal();
+
 }
+
 
 /* ==========================================================
    ELIMINAR
@@ -534,37 +980,519 @@ deleteBtn.addEventListener(
                 "eventId"
             ).value;
 
+
         if (
-            confirm(
-                "¿Eliminar compromiso?"
+            !confirm(
+                "¿Deseas eliminar este compromiso?"
             )
         ) {
 
-            events =
-                events.filter(
-                    e => e.id != id
-                );
+            return;
 
-            saveEvents();
-
-            closeModalFunc();
         }
+
+
+        events =
+            events.filter(
+                event =>
+                    String(event.id) !==
+                    String(id)
+            );
+
+
+        /*
+         * Eliminar también el
+         * registro del recordatorio.
+         */
+
+        Object.keys(
+            notifiedEvents
+        ).forEach(
+            key => {
+
+                if (
+                    key.includes(
+                        String(id)
+                    )
+                ) {
+
+                    delete notifiedEvents[
+                        key
+                    ];
+
+                }
+
+            }
+        );
+
+
+        saveNotificationState();
+
+        saveEvents();
+
+        closeModalFunc();
 
     }
 );
 
+
 /* ==========================================================
-   GUARDAR LOCAL
+   LOCAL STORAGE
 ========================================================== */
 
 function saveEvents() {
 
     localStorage.setItem(
-        "agendaEvents",
+        STORAGE_KEY,
         JSON.stringify(events)
     );
 
+
     renderCalendar();
+
     renderEvents();
+
     updateCounters();
+
+}
+
+
+function saveNotificationState() {
+
+    localStorage.setItem(
+        NOTIFIED_KEY,
+        JSON.stringify(
+            notifiedEvents
+        )
+    );
+
+}
+
+
+/* ==========================================================
+   NOTIFICACIONES
+========================================================== */
+
+async function requestNotificationPermission() {
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        console.log(
+            "Este navegador no soporta notificaciones."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * No molestamos automáticamente
+     * si ya existe una decisión.
+     */
+
+    if (
+        Notification.permission ===
+        "granted"
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        Notification.permission ===
+        "denied"
+    ) {
+
+        return;
+
+    }
+
+}
+
+
+/* ==========================================================
+   BOTÓN DE NOTIFICACIONES
+========================================================== */
+
+notificationBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (
+            !("Notification" in window)
+        ) {
+
+            alert(
+                "Este navegador no permite notificaciones."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            Notification.permission ===
+            "granted"
+        ) {
+
+            alert(
+                "Las notificaciones ya están activadas."
+            );
+
+            return;
+
+        }
+
+
+        const permission =
+            await Notification.requestPermission();
+
+
+        if (
+            permission ===
+            "granted"
+        ) {
+
+            notificationBtn.textContent =
+                "🔔";
+
+            alert(
+                "Notificaciones activadas correctamente."
+            );
+
+
+            /*
+             * Revisamos inmediatamente.
+             */
+
+            checkReminders();
+
+        } else {
+
+            alert(
+                "Las notificaciones no fueron activadas."
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   COMPROBAR RECORDATORIOS
+========================================================== */
+
+function checkReminders() {
+
+    if (
+        !("Notification" in window)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        Notification.permission !==
+        "granted"
+    ) {
+
+        return;
+
+    }
+
+
+    const now =
+        new Date();
+
+
+    events.forEach(
+        event => {
+
+            if (
+                event.reminder === false
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                !event.date ||
+                !event.time
+            ) {
+
+                return;
+
+            }
+
+
+            const eventDate =
+                new Date(
+                    `${event.date}T${event.time}:00`
+                );
+
+
+            const reminderDate =
+                new Date(
+                    eventDate.getTime() -
+                    (
+                        REMINDER_MINUTES *
+                        60 *
+                        1000
+                    )
+                );
+
+
+            /*
+             * Ventana de comprobación:
+             *
+             * desde el momento del recordatorio
+             * hasta 1 minuto después.
+             */
+
+            const difference =
+                now.getTime() -
+                reminderDate.getTime();
+
+
+            const oneMinute =
+                60 * 1000;
+
+
+            if (
+                difference >= 0 &&
+                difference <= oneMinute
+            ) {
+
+                sendReminder(
+                    event
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   ENVIAR RECORDATORIO
+========================================================== */
+
+async function sendReminder(event) {
+
+    const key =
+        notificationKey(event);
+
+
+    /*
+     * Evitar duplicados.
+     */
+
+    if (
+        notifiedEvents[key]
+    ) {
+
+        return;
+
+    }
+
+
+    notifiedEvents[key] =
+        true;
+
+
+    saveNotificationState();
+
+
+    const title =
+        "🔔 Compromiso en 30 minutos";
+
+
+    const body =
+        `${event.title}` +
+        ` · ${event.time}` +
+        (
+            event.location
+                ? ` · ${event.location}`
+                : ""
+        );
+
+
+    /*
+     * Si tenemos Service Worker,
+     * intentamos mostrar la notificación
+     * mediante él.
+     */
+
+    if (
+        "serviceWorker" in navigator
+    ) {
+
+        try {
+
+            const registration =
+                await navigator
+                    .serviceWorker
+                    .ready;
+
+
+            await registration.showNotification(
+                title,
+                {
+                    body: body,
+
+                    icon:
+                        "icons/icon-192.png",
+
+                    badge:
+                        "icons/icon-192.png",
+
+                    tag:
+                        `agenda-${event.id}`,
+
+                    renotify: true,
+
+                    data: {
+                        eventId:
+                            event.id
+                    }
+
+                }
+            );
+
+
+            return;
+
+        } catch (error) {
+
+            console.error(
+                "Error en notificación:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Alternativa.
+     */
+
+    try {
+
+        new Notification(
+            title,
+            {
+                body: body
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   CLAVE ÚNICA DE NOTIFICACIÓN
+========================================================== */
+
+function notificationKey(event) {
+
+    return `${event.id}-${event.date}-${event.time}`;
+
+}
+
+
+/* ==========================================================
+   SEGURIDAD
+========================================================== */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+/* ==========================================================
+   SERVICE WORKER
+========================================================== */
+
+if (
+    "serviceWorker" in navigator
+) {
+
+    window.addEventListener(
+        "load",
+        () => {
+
+            navigator.serviceWorker
+                .register(
+                    "sw.js"
+                )
+                .then(
+                    registration => {
+
+                        console.log(
+                            "Service Worker registrado:",
+                            registration.scope
+                        );
+
+                    }
+                )
+                .catch(
+                    error => {
+
+                        console.error(
+                            "Error Service Worker:",
+                            error
+                        );
+
+                    }
+                );
+
+        }
+    );
+
 }
