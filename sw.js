@@ -1,4 +1,4 @@
-const CACHE_NAME = "agenda-quindio-v3";
+const CACHE_NAME = "agenda-quindio-v4";
 
 const APP_FILES = [
   "./",
