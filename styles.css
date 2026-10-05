@@ -1363,64 +1363,6 @@ button {
 }
 
 
-/* =========================================================
-   FLOATING BUTTON
-========================================================= */
-
-.floating-add {
-
-  position: fixed;
-
-  z-index: 80;
-
-  right: 19px;
-
-  bottom:
-    calc(
-      78px + env(safe-area-inset-bottom)
-    );
-
-  width: 57px;
-  height: 57px;
-
-  border:
-    4px solid
-    rgba(255,255,255,.85);
-
-  border-radius: 50%;
-
-  background:
-    linear-gradient(
-      145deg,
-      var(--gold),
-      #e7a900
-    );
-
-  color:
-    var(--blue-dark);
-
-  box-shadow:
-    0 9px 25px
-    rgba(5,55,110,.28);
-
-  font-size: 29px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-}
-
-
-.floating-add:active {
-
-  transform:
-    scale(.92);
-
-}
-
 
 /* =========================================================
    BOTTOM NAV
@@ -1946,14 +1888,7 @@ textarea {
   }
 
 
-  .floating-add {
-
-    right:
-      calc(
-        50% - 430px
-      );
-
-  }
+ 
 
 
   .modal {
