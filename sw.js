@@ -1,7 +1,6 @@
-const CACHE_NAME =
-  "agenda-quindio-v1";
+const CACHE_NAME = "agenda-quindio-v2";
 
-const FILES_TO_CACHE = [
+const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
@@ -10,125 +9,145 @@ const FILES_TO_CACHE = [
 ];
 
 
-self.addEventListener(
-  "install",
-  event => {
+// ==========================================
+// INSTALACIÓN
+// ==========================================
 
-    event.waitUntil(
+self.addEventListener("install", event => {
 
-      caches.open(CACHE_NAME)
-        .then(cache =>
-          cache.addAll(
-            FILES_TO_CACHE
-          )
-        )
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(APP_FILES);
+      })
+  );
 
-    );
+  self.skipWaiting();
 
-    self.skipWaiting();
-
-  }
-);
+});
 
 
-self.addEventListener(
-  "activate",
-  event => {
+// ==========================================
+// ACTIVACIÓN
+// ==========================================
 
-    event.waitUntil(
+self.addEventListener("activate", event => {
 
-      caches.keys()
-        .then(keys =>
-          Promise.all(
+  event.waitUntil(
 
-            keys
-              .filter(
-                key =>
-                  key !== CACHE_NAME
-              )
+    caches.keys()
+      .then(cacheNames => {
 
-              .map(
-                key =>
-                  caches.delete(key)
-              )
+        return Promise.all(
 
-          )
-        )
+          cacheNames
+            .filter(name => name !== CACHE_NAME)
+            .map(name => caches.delete(name))
 
-    );
-
-    self.clients.claim();
-
-  }
-);
-
-
-self.addEventListener(
-  "fetch",
-  event => {
-
-    if (
-      event.request.method !== "GET"
-    ) {
-      return;
-    }
-
-
-    event.respondWith(
-
-      caches.match(
-        event.request
-      )
-      .then(cached => {
-
-        if (cached) {
-          return cached;
-        }
-
-
-        return fetch(
-          event.request
-        )
-        .then(response => {
-
-          if (
-            !response ||
-            response.status !== 200 ||
-            response.type === "opaque"
-          ) {
-            return response;
-          }
-
-
-          const copy =
-            response.clone();
-
-
-          caches.open(
-            CACHE_NAME
-          )
-          .then(cache => {
-
-            cache.put(
-              event.request,
-              copy
-            );
-
-          });
-
-
-          return response;
-
-        })
-        .catch(() =>
-          caches.match(
-            "./index.html"
-          )
         );
 
       })
 
-    );
+  );
 
+  self.clients.claim();
+
+});
+
+
+// ==========================================
+// FETCH
+// ==========================================
+
+self.addEventListener("fetch", event => {
+
+  const request = event.request;
+
+  // Solo manejar solicitudes GET
+  if (request.method !== "GET") {
+    return;
   }
-);
+
+  // Solo manejar http y https
+  const url = new URL(request.url);
+
+  if (
+    url.protocol !== "http:" &&
+    url.protocol !== "https:"
+  ) {
+    return;
+  }
+
+
+  event.respondWith(
+
+    caches.match(request)
+      .then(cachedResponse => {
+
+        // Si está en caché, utilizarlo
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+
+        // Si no está en caché, solicitarlo
+        return fetch(request)
+          .then(networkResponse => {
+
+            // Verificar respuesta válida
+            if (
+              !networkResponse ||
+              networkResponse.status !== 200
+            ) {
+              return networkResponse;
+            }
+
+
+            // Guardar únicamente recursos http/https
+            // y del mismo origen
+            if (
+              url.origin === self.location.origin
+            ) {
+
+              const responseClone =
+                networkResponse.clone();
+
+              caches.open(CACHE_NAME)
+                .then(cache => {
+
+                  cache.put(
+                    request,
+                    responseClone
+                  ).catch(error => {
+
+                    console.warn(
+                      "No se pudo guardar en caché:",
+                      request.url,
+                      error
+                    );
+
+                  });
+
+                });
+
+            }
+
+
+            return networkResponse;
+
+          })
+          .catch(() => {
+
+            // Si estamos sin conexión,
+            // devolver index.html
+            return caches.match(
+              "./index.html"
+            );
+
+          });
+
+      })
+
+  );
+
+});
