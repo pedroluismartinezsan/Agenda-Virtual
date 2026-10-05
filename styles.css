@@ -2085,3 +2085,246 @@ textarea {
   }
 
 }
+/* =========================================================
+   RECORDATORIOS
+========================================================= */
+
+.notification-btn {
+
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid
+    rgba(255,255,255,.30);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,.12);
+
+  color: white;
+
+  font-size: 18px;
+
+  backdrop-filter: blur(10px);
+
+}
+
+
+.notification-btn:active {
+
+  transform: scale(.92);
+
+}
+
+
+.reminder-box {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 12px;
+
+  margin-bottom: 15px;
+
+  border:
+    1px solid
+    #e5ebf2;
+
+  border-radius: 13px;
+
+  background:
+    #f8fafc;
+
+}
+
+
+.reminder-icon {
+
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    #fff5d2;
+
+}
+
+
+.reminder-text {
+
+  flex: 1;
+
+}
+
+
+.reminder-text strong {
+
+  display: block;
+
+  font-size: 12px;
+
+  color:
+    var(--text);
+
+}
+
+
+.reminder-text span {
+
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    var(--text-soft);
+
+  font-size: 10px;
+
+}
+
+
+/* Interruptor */
+
+.switch {
+
+  position: relative;
+
+  width: 43px;
+  height: 24px;
+
+  margin: 0 !important;
+
+}
+
+
+.switch input {
+
+  opacity: 0;
+
+  width: 0;
+  height: 0;
+
+  margin: 0;
+
+}
+
+
+.slider {
+
+  position: absolute;
+
+  inset: 0;
+
+  cursor: pointer;
+
+  border-radius: 30px;
+
+  background:
+    #cbd5e1;
+
+  transition: .2s;
+
+}
+
+
+.slider::before {
+
+  content: "";
+
+  position: absolute;
+
+  width: 18px;
+  height: 18px;
+
+  left: 3px;
+  top: 3px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow:
+    0 2px 5px
+    rgba(0,0,0,.20);
+
+  transition: .2s;
+
+}
+
+
+.switch input:checked + .slider {
+
+  background:
+    var(--blue);
+
+}
+
+
+.switch input:checked + .slider::before {
+
+  transform:
+    translateX(19px);
+
+}
+
+
+/* Recordatorio dentro de evento */
+
+.event-reminder {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  margin-top: 8px;
+
+  padding:
+    4px 7px;
+
+  border-radius: 7px;
+
+  background:
+    #fff6d8;
+
+  color:
+    #9b7200;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+}
+
+
+/* Prioridad */
+
+.event-priority {
+
+  padding:
+    4px 7px;
+
+  border-radius: 7px;
+
+  background:
+    #f1f4f7;
+
+  color:
+    var(--text-soft);
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+
+}
