@@ -1,153 +1,329 @@
-const CACHE_NAME = "agenda-quindio-v4";
+/* ==========================================================
+   AGENDA VIRTUAL · PEDRO LEÓN
+   SERVICE WORKER
+========================================================== */
 
-const APP_FILES = [
-  "./",
-  "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./manifest.json"
+const CACHE_NAME =
+    "agenda-quindio-v5";
+
+
+const STATIC_FILES = [
+
+    "./",
+
+    "./index.html",
+
+    "./styles.css",
+
+    "./app.js",
+
+    "./manifest.json",
+
+    "./icons/logo-diputado.png",
+
+    "./icons/icon-192.png",
+
+    "./icons/icon-512.png"
+
 ];
 
 
-// ==========================================
-// INSTALACIÓN
-// ==========================================
+/* ==========================================================
+   INSTALACIÓN
+========================================================== */
 
-self.addEventListener("install", event => {
+self.addEventListener(
+    "install",
+    event => {
 
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(APP_FILES);
-      })
-  );
-
-  self.skipWaiting();
-
-});
+        console.log(
+            "Service Worker: instalación"
+        );
 
 
-// ==========================================
-// ACTIVACIÓN
-// ==========================================
+        event.waitUntil(
 
-self.addEventListener("activate", event => {
-
-  event.waitUntil(
-
-    caches.keys()
-      .then(cacheNames => {
-
-        return Promise.all(
-
-          cacheNames
-            .filter(name => name !== CACHE_NAME)
-            .map(name => caches.delete(name))
+            caches
+                .open(
+                    CACHE_NAME
+                )
+                .then(
+                    cache =>
+                        cache.addAll(
+                            STATIC_FILES
+                        )
+                )
+                .then(
+                    () =>
+                        self.skipWaiting()
+                )
 
         );
 
-      })
-
-  );
-
-  self.clients.claim();
-
-});
+    }
+);
 
 
-// ==========================================
-// FETCH
-// ==========================================
+/* ==========================================================
+   ACTIVACIÓN
+========================================================== */
 
-self.addEventListener("fetch", event => {
+self.addEventListener(
+    "activate",
+    event => {
 
-  const request = event.request;
-
-  // Solo manejar solicitudes GET
-  if (request.method !== "GET") {
-    return;
-  }
-
-  // Solo manejar http y https
-  const url = new URL(request.url);
-
-  if (
-    url.protocol !== "http:" &&
-    url.protocol !== "https:"
-  ) {
-    return;
-  }
+        console.log(
+            "Service Worker: activado"
+        );
 
 
-  event.respondWith(
+        event.waitUntil(
 
-    caches.match(request)
-      .then(cachedResponse => {
+            caches
+                .keys()
+                .then(
+                    cacheNames => {
 
-        // Si está en caché, utilizarlo
-        if (cachedResponse) {
-          return cachedResponse;
+                        return Promise.all(
+
+                            cacheNames
+                                .filter(
+                                    name =>
+                                        name !==
+                                        CACHE_NAME
+                                )
+                                .map(
+                                    name =>
+                                        caches.delete(
+                                            name
+                                        )
+                                )
+
+                        );
+
+                    }
+                )
+                .then(
+                    () =>
+                        self.clients.claim()
+                )
+
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   FETCH
+========================================================== */
+
+self.addEventListener(
+    "fetch",
+    event => {
+
+        const request =
+            event.request;
+
+
+        /*
+         * SOLUCIÓN AL ERROR:
+         *
+         * chrome-extension://
+         * moz-extension://
+         * etc.
+         *
+         * NO se intentan guardar
+         * en Cache.
+         */
+
+        if (
+            request.method !== "GET"
+        ) {
+
+            return;
+
         }
 
 
-        // Si no está en caché, solicitarlo
-        return fetch(request)
-          .then(networkResponse => {
+        if (
+            !(
+                request.url.startsWith(
+                    "http://"
+                ) ||
+                request.url.startsWith(
+                    "https://"
+                )
+            )
+        ) {
 
-            // Verificar respuesta válida
-            if (
-              !networkResponse ||
-              networkResponse.status !== 200
-            ) {
-              return networkResponse;
-            }
+            return;
+
+        }
 
 
-            // Guardar únicamente recursos http/https
-            // y del mismo origen
-            if (
-              url.origin === self.location.origin
-            ) {
+        event.respondWith(
 
-              const responseClone =
-                networkResponse.clone();
+            caches.match(
+                request
+            )
+            .then(
+                cachedResponse => {
 
-              caches.open(CACHE_NAME)
-                .then(cache => {
+                    if (
+                        cachedResponse
+                    ) {
 
-                  cache.put(
-                    request,
-                    responseClone
-                  ).catch(error => {
+                        return cachedResponse;
 
-                    console.warn(
-                      "No se pudo guardar en caché:",
-                      request.url,
-                      error
+                    }
+
+
+                    return fetch(
+                        request
+                    )
+                    .then(
+                        response => {
+
+                            /*
+                             * Solo almacenamos
+                             * respuestas válidas.
+                             */
+
+                            if (
+                                !response ||
+                                response.status !== 200
+                            ) {
+
+                                return response;
+
+                            }
+
+
+                            const responseClone =
+                                response.clone();
+
+
+                            caches
+                                .open(
+                                    CACHE_NAME
+                                )
+                                .then(
+                                    cache => {
+
+                                        cache.put(
+                                            request,
+                                            responseClone
+                                        );
+
+                                    }
+                                );
+
+
+                            return response;
+
+                        }
                     );
 
-                  });
+                }
+            )
+            .catch(
+                () =>
+                    caches.match(
+                        "./index.html"
+                    )
+            )
 
-                });
+        );
 
-            }
+    }
+);
 
 
-            return networkResponse;
+/* ==========================================================
+   NOTIFICACIONES
+========================================================== */
 
-          })
-          .catch(() => {
+self.addEventListener(
+    "notificationclick",
+    event => {
 
-            // Si estamos sin conexión,
-            // devolver index.html
-            return caches.match(
-              "./index.html"
-            );
+        event.notification.close();
 
-          });
 
-      })
+        event.waitUntil(
 
-  );
+            clients.matchAll(
+                {
+                    type: "window",
+                    includeUncontrolled: true
+                }
+            )
+            .then(
+                clientList => {
 
-});
+                    /*
+                     * Si la aplicación
+                     * ya está abierta,
+                     * la enfocamos.
+                     */
+
+                    for (
+                        const client of clientList
+                    ) {
+
+                        if (
+                            "focus" in client
+                        ) {
+
+                            return client.focus();
+
+                        }
+
+                    }
+
+
+                    /*
+                     * Si no está abierta,
+                     * abrimos la aplicación.
+                     */
+
+                    if (
+                        clients.openWindow
+                    ) {
+
+                        return clients.openWindow(
+                            "./"
+                        );
+
+                    }
+
+                }
+            )
+
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   MENSAJE DESDE LA APP
+========================================================== */
+
+self.addEventListener(
+    "message",
+    event => {
+
+        if (
+            event.data &&
+            event.data.type ===
+                "SKIP_WAITING"
+        ) {
+
+            self.skipWaiting();
+
+        }
+
+    }
+);
