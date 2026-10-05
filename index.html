@@ -32,7 +32,7 @@
 
   <meta
     name="apple-mobile-web-app-title"
-    content="Agenda Virtual"
+    content="Agenda Pedro León"
   >
 
   <meta
@@ -40,10 +40,7 @@
     content="Agenda Virtual del Diputado Pedro León"
   >
 
-  <link
-    rel="manifest"
-    href="manifest.json"
-  >
+  <link rel="manifest" href="manifest.json">
 
   <link
     rel="apple-touch-icon"
@@ -55,830 +52,676 @@
     href="styles.css"
   >
 
-  <title>Agenda Virtual · Pedro León</title>
+  <title>Agenda Pedro León</title>
 
 </head>
 
 
 <body>
 
-
-  <!-- =====================================================
-       APP
-  ====================================================== -->
-
-  <div class="app">
+<div class="app">
 
 
-    <!-- ===================================================
-         HEADER
-    ==================================================== -->
+  <!-- ==================================================
+       ENCABEZADO
+  =================================================== -->
 
-    <header class="app-header">
+  <header class="app-header">
 
-      <div class="header-top">
+    <div class="header-top">
 
-        <div class="header-brand">
+      <div class="header-brand">
 
-          <img
-            src="icons/logo-diputado.png"
-            alt="Pedro León"
-            class="header-logo"
-          >
+        <img
+          src="icons/logo-diputado.png"
+          alt="Diputado Pedro León"
+          class="header-logo"
+        >
 
-          <div class="header-title">
+        <div class="header-title">
 
-            <span class="eyebrow">
-              AGENDA VIRTUAL
-            </span>
+          <span class="eyebrow">
+            AGENDA VIRTUAL
+          </span>
 
-            <h1>
-              DIPUTADO
-            </h1>
+          <h1>
+            DIPUTADO
+          </h1>
 
-            <span class="header-name">
-              PEDRO LEÓN
-            </span>
-
-          </div>
+          <span class="header-name">
+            PEDRO LEÓN
+          </span>
 
         </div>
 
+      </div>
 
-        <button
-          id="installBtn"
-          class="install-btn hidden"
-          type="button"
+
+      <button
+        id="notificationBtn"
+        class="notification-btn"
+        type="button"
+        title="Activar notificaciones"
+      >
+        🔔
+      </button>
+
+    </div>
+
+
+    <div class="header-line">
+      <span></span>
+      <i></i>
+      <span></span>
+    </div>
+
+
+    <!-- Resumen del día -->
+
+    <div class="today-hero">
+
+      <div class="today-info">
+
+        <span class="today-label">
+          HOY
+        </span>
+
+        <div
+          id="heroDate"
+          class="hero-date"
         >
-          <span>＋</span>
-          Instalar
-        </button>
+          —
+        </div>
+
+        <div class="hero-subtitle">
+          Agenda de actividades
+        </div>
 
       </div>
 
 
-      <!-- Línea decorativa -->
+      <div class="today-number">
 
-      <div class="header-line">
+        <strong id="todayHeroCount">
+          0
+        </strong>
 
-        <span></span>
-        <i></i>
-        <span></span>
+        <span>
+          compromisos
+        </span>
 
       </div>
 
+    </div>
 
-      <!-- Tarjeta del día -->
+  </header>
 
-      <div class="today-hero">
 
-        <div class="today-info">
+  <!-- ==================================================
+       CONTENIDO
+  =================================================== -->
 
-          <span class="today-label">
+  <main class="main-content">
+
+
+    <!-- RESUMEN -->
+
+    <section class="summary-grid">
+
+
+      <div class="summary-card summary-blue">
+
+        <div class="summary-icon">
+          📅
+        </div>
+
+        <div class="summary-data">
+
+          <span>
             HOY
           </span>
 
-          <div
-            id="heroDate"
-            class="hero-date"
-          >
-            Lunes, 5 de octubre
-          </div>
-
-          <div class="hero-subtitle">
-            Agenda de actividades
-          </div>
-
-        </div>
-
-
-        <div class="today-number">
-
-          <strong id="todayHeroCount">
+          <strong id="todayCount">
             0
           </strong>
 
-          <span>
+          <small>
             compromisos
-          </span>
+          </small>
 
         </div>
 
       </div>
 
-    </header>
 
+      <div class="summary-card summary-gold">
 
-    <!-- ===================================================
-         CONTENIDO
-    ==================================================== -->
+        <div class="summary-icon">
+          ⏱
+        </div>
 
-    <main class="main-content">
+        <div class="summary-data">
 
+          <span>
+            PRÓXIMOS
+          </span>
 
-      <!-- =================================================
-           RESUMEN
-      ================================================== -->
+          <strong id="upcomingCount">
+            0
+          </strong>
 
-      <section class="summary-grid">
-
-
-        <div class="summary-card summary-blue">
-
-          <div class="summary-icon">
-            📅
-          </div>
-
-          <div class="summary-data">
-
-            <span>
-              HOY
-            </span>
-
-            <strong id="todayCount">
-              0
-            </strong>
-
-            <small>
-              compromisos
-            </small>
-
-          </div>
+          <small>
+            actividades
+          </small>
 
         </div>
 
+      </div>
 
-        <div class="summary-card summary-gold">
 
-          <div class="summary-icon">
-            ⏱
-          </div>
+      <div class="summary-card summary-red">
 
-          <div class="summary-data">
+        <div class="summary-icon">
+          !
+        </div>
 
-            <span>
-              PRÓXIMOS
-            </span>
+        <div class="summary-data">
 
-            <strong id="upcomingCount">
-              0
-            </strong>
+          <span>
+            PRIORIDAD
+          </span>
 
-            <small>
-              actividades
-            </small>
+          <strong id="highCount">
+            0
+          </strong>
 
-          </div>
+          <small>
+            importantes
+          </small>
 
         </div>
 
+      </div>
 
-        <div class="summary-card summary-red">
 
-          <div class="summary-icon">
-            !
-          </div>
+    </section>
 
-          <div class="summary-data">
 
-            <span>
-              PRIORIDAD
-            </span>
+    <!-- ==================================================
+         CALENDARIO
+    =================================================== -->
 
-            <strong id="highCount">
-              0
-            </strong>
+    <section class="calendar-card">
 
-            <small>
-              importantes
-            </small>
 
-          </div>
-
-        </div>
-
-
-      </section>
-
-
-      <!-- =================================================
-           CALENDARIO
-      ================================================== -->
-
-      <section class="calendar-card">
-
-
-        <div class="section-heading">
-
-          <div>
-
-            <span class="section-kicker">
-              PLANIFICACIÓN
-            </span>
-
-            <h2>
-              Mi calendario
-            </h2>
-
-          </div>
-
-
-          <button
-            id="todayBtn"
-            class="today-button"
-            type="button"
-          >
-            Hoy
-          </button>
-
-        </div>
-
-
-        <div class="calendar-navigation">
-
-          <button
-            id="prevMonth"
-            class="calendar-arrow"
-            type="button"
-            aria-label="Mes anterior"
-          >
-            ‹
-          </button>
-
-
-          <h3 id="monthTitle">
-            Octubre 2026
-          </h3>
-
-
-          <button
-            id="nextMonth"
-            class="calendar-arrow"
-            type="button"
-            aria-label="Mes siguiente"
-          >
-            ›
-          </button>
-
-        </div>
-
-
-        <div class="weekdays">
-
-          <span>LUN</span>
-          <span>MAR</span>
-          <span>MIÉ</span>
-          <span>JUE</span>
-          <span>VIE</span>
-          <span>SÁB</span>
-          <span>DOM</span>
-
-        </div>
-
-
-        <div
-          id="calendar"
-          class="calendar"
-        ></div>
-
-
-        <div class="calendar-legend">
-
-          <div>
-            <i class="legend-dot gold"></i>
-            Actividad
-          </div>
-
-          <div>
-            <i class="legend-dot today-dot"></i>
-            Hoy
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- =================================================
-           AGENDA DEL DÍA
-      ================================================== -->
-
-      <section class="agenda-section">
-
-
-        <div class="section-heading agenda-heading">
-
-          <div>
-
-            <span class="section-kicker">
-              COMPROMISOS
-            </span>
-
-            <h2 id="selectedDateTitle">
-              Agenda del día
-            </h2>
-
-          </div>
-
-
-          <button
-            id="addBtn"
-            class="add-top-button"
-            type="button"
-          >
-            <span>＋</span>
-            Nuevo
-          </button>
-
-        </div>
-
-
-        <!-- Lista generada por app.js -->
-
-        <div
-          id="eventList"
-          class="event-list"
-        ></div>
-
-
-      </section>
-
-
-    </main>
-
-
-    <!-- ===================================================
-         BOTÓN FLOTANTE
-    ==================================================== -->
-
-    <button
-      id="floatingAdd"
-      class="floating-add"
-      type="button"
-      aria-label="Agregar compromiso"
-    >
-
-      <span>＋</span>
-
-    </button>
-
-
-    <!-- ===================================================
-         NAVEGACIÓN INFERIOR
-    ==================================================== -->
-
-    <nav class="bottom-nav">
-
-      <button
-        class="bottom-nav-item active"
-        type="button"
-      >
-
-        <span class="nav-icon">
-          ▦
-        </span>
-
-        <span>
-          Agenda
-        </span>
-
-      </button>
-
-
-      <button
-        class="bottom-nav-item"
-        type="button"
-        id="navNew"
-      >
-
-        <span class="nav-main-add">
-          ＋
-        </span>
-
-        <span>
-          Nuevo
-        </span>
-
-      </button>
-
-
-      <button
-        class="bottom-nav-item"
-        type="button"
-      >
-
-        <span class="nav-icon">
-          ●
-        </span>
-
-        <span>
-          Resumen
-        </span>
-
-      </button>
-
-    </nav>
-
-
-  </div>
-
-
-  <!-- =====================================================
-       MODAL
-  ====================================================== -->
-
-  <div
-    id="modal"
-    class="modal hidden"
-  >
-
-    <div class="modal-content">
-
-
-      <div class="modal-handle"></div>
-
-
-      <div class="modal-header">
+      <div class="section-heading">
 
         <div>
 
           <span class="section-kicker">
-            AGENDA
+            PLANIFICACIÓN
           </span>
 
-          <h2 id="modalTitle">
-            Agregar actividad
+          <h2>
+            Mi calendario
           </h2>
 
         </div>
 
 
         <button
-          id="closeModal"
-          class="close-btn"
+          id="todayBtn"
+          class="today-button"
           type="button"
-          aria-label="Cerrar"
         >
-          ×
+          Hoy
         </button>
 
       </div>
 
 
-      <form id="eventForm">
+      <div class="calendar-navigation">
 
+        <button
+          id="prevMonth"
+          class="calendar-arrow"
+          type="button"
+        >
+          ‹
+        </button>
+
+
+        <h3 id="monthTitle">
+          —
+        </h3>
+
+
+        <button
+          id="nextMonth"
+          class="calendar-arrow"
+          type="button"
+        >
+          ›
+        </button>
+
+      </div>
+
+
+      <div class="weekdays">
+
+        <span>LUN</span>
+        <span>MAR</span>
+        <span>MIÉ</span>
+        <span>JUE</span>
+        <span>VIE</span>
+        <span>SÁB</span>
+        <span>DOM</span>
+
+      </div>
+
+
+      <div
+        id="calendar"
+        class="calendar"
+      ></div>
+
+
+      <div class="calendar-legend">
+
+        <div>
+          <i class="legend-dot gold"></i>
+          Actividad
+        </div>
+
+        <div>
+          <i class="legend-dot today-dot"></i>
+          Hoy
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         AGENDA
+    =================================================== -->
+
+    <section class="agenda-section">
+
+
+      <div class="section-heading agenda-heading">
+
+        <div>
+
+          <span class="section-kicker">
+            COMPROMISOS
+          </span>
+
+          <h2 id="selectedDateTitle">
+            Agenda del día
+          </h2>
+
+        </div>
+
+
+        <!-- ÚNICO BOTÓN NUEVO -->
+
+        <button
+          id="addBtn"
+          class="add-top-button"
+          type="button"
+        >
+          <span>＋</span>
+          Nuevo
+        </button>
+
+      </div>
+
+
+      <div
+        id="eventList"
+        class="event-list"
+      ></div>
+
+
+    </section>
+
+
+  </main>
+
+
+  <!-- ==================================================
+       NAVEGACIÓN INFERIOR
+  =================================================== -->
+
+  <nav class="bottom-nav">
+
+    <button
+      class="bottom-nav-item active"
+      type="button"
+      id="navAgenda"
+    >
+
+      <span class="nav-icon">
+        ▦
+      </span>
+
+      <span>
+        Agenda
+      </span>
+
+    </button>
+
+
+    <button
+      class="bottom-nav-item"
+      type="button"
+      id="navResumen"
+    >
+
+      <span class="nav-icon">
+        ◉
+      </span>
+
+      <span>
+        Resumen
+      </span>
+
+    </button>
+
+  </nav>
+
+
+</div>
+
+
+<!-- ==================================================
+     MODAL
+=================================================== -->
+
+<div
+  id="modal"
+  class="modal hidden"
+>
+
+  <div class="modal-content">
+
+
+    <div class="modal-handle"></div>
+
+
+    <div class="modal-header">
+
+      <div>
+
+        <span class="section-kicker">
+          AGENDA
+        </span>
+
+        <h2 id="modalTitle">
+          Nuevo compromiso
+        </h2>
+
+      </div>
+
+
+      <button
+        id="closeModal"
+        class="close-btn"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="eventForm">
+
+
+      <input
+        type="hidden"
+        id="eventId"
+      >
+
+
+      <label>
+
+        <span>
+          Compromiso
+        </span>
 
         <input
-          type="hidden"
-          id="eventId"
+          type="text"
+          id="eventTitle"
+          placeholder="Ej. Reunión con líderes comunitarios"
+          required
         >
+
+      </label>
+
+
+      <div class="form-grid">
 
 
         <label>
 
           <span>
-            Compromiso
+            Fecha
           </span>
 
           <input
-            type="text"
-            id="eventTitle"
-            placeholder="Ej. Reunión con líderes comunitarios"
+            type="date"
+            id="eventDate"
             required
           >
 
         </label>
 
 
-        <div class="form-grid">
-
-
-          <label>
-
-            <span>
-              Fecha
-            </span>
-
-            <input
-              type="date"
-              id="eventDate"
-              required
-            >
-
-          </label>
-
-
-          <label>
-
-            <span>
-              Hora
-            </span>
-
-            <input
-              type="time"
-              id="eventTime"
-              required
-            >
-
-          </label>
-
-
-        </div>
-
-
         <label>
 
           <span>
-            Lugar
+            Hora
           </span>
 
           <input
-            type="text"
-            id="eventLocation"
-            placeholder="Ej. Asamblea Departamental"
+            type="time"
+            id="eventTime"
+            required
           >
 
         </label>
 
 
-        <div class="form-grid">
+      </div>
 
 
-          <label>
+      <label>
 
-            <span>
-              Categoría
-            </span>
+        <span>
+          Lugar
+        </span>
 
-            <select id="eventCategory">
+        <input
+          type="text"
+          id="eventLocation"
+          placeholder="Ej. Asamblea Departamental"
+        >
 
-              <option value="Sesión Plenaria">
-                Sesión Plenaria
-              </option>
-
-              <option value="Comisión">
-                Comisión
-              </option>
-
-              <option value="Reunión Ciudadana">
-                Reunión Ciudadana
-              </option>
-
-              <option value="Reunión Institucional">
-                Reunión Institucional
-              </option>
-
-              <option value="Prensa">
-                Prensa
-              </option>
-
-              <option value="Recorrido / Visita">
-                Recorrido / Visita
-              </option>
-
-              <option value="Otro">
-                Otro
-              </option>
-
-            </select>
-
-          </label>
+      </label>
 
 
-          <label>
-
-            <span>
-              Prioridad
-            </span>
-
-            <select id="eventPriority">
-
-              <option value="Alta">
-                Alta
-              </option>
-
-              <option
-                value="Media"
-                selected
-              >
-                Media
-              </option>
-
-              <option value="Baja">
-                Baja
-              </option>
-
-            </select>
-
-          </label>
-
-
-        </div>
+      <div class="form-grid">
 
 
         <label>
 
           <span>
-            Observaciones
+            Categoría
           </span>
 
-          <textarea
-            id="eventNotes"
-            rows="4"
-            placeholder="Información adicional..."
-          ></textarea>
+          <select id="eventCategory">
+
+            <option value="Sesión Plenaria">
+              Sesión Plenaria
+            </option>
+
+            <option value="Comisión">
+              Comisión
+            </option>
+
+            <option value="Reunión Ciudadana">
+              Reunión Ciudadana
+            </option>
+
+            <option value="Reunión Institucional">
+              Reunión Institucional
+            </option>
+
+            <option value="Prensa">
+              Prensa
+            </option>
+
+            <option value="Recorrido / Visita">
+              Recorrido / Visita
+            </option>
+
+            <option value="Otro">
+              Otro
+            </option>
+
+          </select>
 
         </label>
 
 
-        <div class="form-actions">
+        <label>
+
+          <span>
+            Prioridad
+          </span>
+
+          <select id="eventPriority">
+
+            <option value="Alta">
+              Alta
+            </option>
+
+            <option value="Media" selected>
+              Media
+            </option>
+
+            <option value="Baja">
+              Baja
+            </option>
+
+          </select>
+
+        </label>
 
 
-          <button
-            type="button"
-            id="deleteBtn"
-            class="delete-btn hidden"
-          >
-            Eliminar
-          </button>
+      </div>
 
 
-          <button
-            type="button"
-            id="cancelBtn"
-            class="cancel-btn"
-          >
-            Cancelar
-          </button>
+      <!-- ==================================================
+           RECORDATORIO
+      =================================================== -->
 
+      <div class="reminder-box">
 
-          <button
-            type="submit"
-            class="save-btn"
-          >
-            Guardar compromiso
-          </button>
+        <div class="reminder-icon">
+          🔔
+        </div>
 
+        <div class="reminder-text">
+
+          <strong>
+            Recordatorio
+          </strong>
+
+          <span>
+            Recibir aviso 30 minutos antes
+          </span>
 
         </div>
 
 
-      </form>
+        <label class="switch">
 
-    </div>
+          <input
+            type="checkbox"
+            id="eventReminder"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <label>
+
+        <span>
+          Observaciones
+        </span>
+
+        <textarea
+          id="eventNotes"
+          rows="4"
+          placeholder="Información adicional..."
+        ></textarea>
+
+      </label>
+
+
+      <div class="form-actions">
+
+
+        <button
+          type="button"
+          id="deleteBtn"
+          class="delete-btn hidden"
+        >
+          Eliminar
+        </button>
+
+
+        <button
+          type="button"
+          id="cancelBtn"
+          class="cancel-btn"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="submit"
+          class="save-btn"
+        >
+          Guardar compromiso
+        </button>
+
+
+      </div>
+
+
+    </form>
 
   </div>
 
-
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
-
-  <script src="app.js"></script>
+</div>
 
 
-  <script>
+<!-- ==================================================
+     JAVASCRIPT
+=================================================== -->
 
-    /*
-     * Botones adicionales de la nueva interfaz.
-     * No modificamos el app.js principal.
-     */
-
-    document.addEventListener("DOMContentLoaded", () => {
-
-      const addButton =
-        document.getElementById("addBtn");
-
-      const floatingAdd =
-        document.getElementById("floatingAdd");
-
-      const navNew =
-        document.getElementById("navNew");
-
-
-      if (floatingAdd && addButton) {
-
-        floatingAdd.addEventListener(
-          "click",
-          () => addButton.click()
-        );
-
-      }
-
-
-      if (navNew && addButton) {
-
-        navNew.addEventListener(
-          "click",
-          () => addButton.click()
-        );
-
-      }
-
-
-      /*
-       * Fecha grande del encabezado
-       */
-
-      const heroDate =
-        document.getElementById("heroDate");
-
-      if (heroDate) {
-
-        const today =
-          new Date();
-
-        heroDate.textContent =
-          new Intl.DateTimeFormat(
-            "es-CO",
-            {
-              weekday: "long",
-              day: "numeric",
-              month: "long"
-            }
-          ).format(today);
-
-      }
-
-    });
-
-
-    /*
-     * Actualizamos el contador grande del encabezado
-     * cuando cambie el contador de HOY.
-     */
-
-    const observer =
-      new MutationObserver(() => {
-
-        const normal =
-          document.getElementById("todayCount");
-
-        const hero =
-          document.getElementById("todayHeroCount");
-
-        if (normal && hero) {
-
-          hero.textContent =
-            normal.textContent;
-
-        }
-
-      });
-
-
-    const todayCounter =
-      document.getElementById("todayCount");
-
-    if (todayCounter) {
-
-      observer.observe(
-        todayCounter,
-        {
-          childList: true,
-          characterData: true,
-          subtree: true
-        }
-      );
-
-    }
-
-
-    /*
-     * Service Worker
-     */
-
-    if ("serviceWorker" in navigator) {
-
-      window.addEventListener(
-        "load",
-        () => {
-
-          navigator.serviceWorker
-            .register("sw.js")
-            .then(() => {
-
-              console.log(
-                "PWA lista"
-              );
-
-            })
-            .catch(error => {
-
-              console.error(
-                "Error PWA:",
-                error
-              );
-
-            });
-
-        }
-      );
-
-    }
-
-  </script>
-
+<script src="app.js"></script>
 
 </body>
 
