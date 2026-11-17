@@ -4,7 +4,7 @@
 ========================================================== */
 
 const CACHE_NAME =
-    "agenda-quindio-v5";
+    "agenda-quindio-v6";
 
 
 const STATIC_FILES = [
@@ -16,6 +16,8 @@ const STATIC_FILES = [
     "./styles.css",
 
     "./app.js",
+
+    "./alarmas.js",
 
     "./manifest.json",
 
